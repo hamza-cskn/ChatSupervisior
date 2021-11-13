@@ -1,0 +1,45 @@
+delicts:
+  badword:
+    display-icon: RED_BANNER
+    name: Badword
+    delict-levels:
+      1:
+        level: 1
+        commands:
+          - 'broadcast lv1 {player}'
+      2:
+        level: 2
+        commands:
+          - 'broadcast lv2'
+      3:
+        level: 3
+        commands:
+          - 'broadcast lv3'
+      4:
+        level: 4
+        commands:
+          - 'broadcast lv4'
+      5:
+        level: 5
+        commands:
+          - 'broadcast lv5'
+      6:
+        level: 6
+        commands:
+          - 'broadcast lv6'
+      7:
+        level: 7
+        commands:
+          - 'broadcast lv7'
+      8:
+        level: 8
+        commands:
+          - 'broadcast lv8'
+      9:
+        level: 9
+        commands:
+          - 'broadcast lv9'
+      10:
+        level: 10
+        commands:
+          - 'broadcast lv10'

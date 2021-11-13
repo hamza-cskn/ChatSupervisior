@@ -1,0 +1,84 @@
+chat-groups:
+  default:
+    format: '&7{player}: &f{message}'
+    chat-cooldown: 1000
+  owner:
+    format: '&c[Owner] {player}: &f{message}'
+    chat-cooldown: 1000
+  admin:
+    format: '&c[Admin] {player}: &f{message}'
+    chat-cooldown: 1000
+  moderator:
+    format: '&d[Moderator] {player}: &f{message}'
+    chat-cooldown: 1000
+  helper:
+    format: '&a[Helper] {player}: &f{message}'
+    chat-cooldown: 1000
+
+# global-chat
+#aktif edildiğinde, normal mesajlar 'local-chat-range' blok mesafe yakındaki oyunculara gider.
+#eğer mesajın başında 'prefix' varsa sunucudaki tüm oyunculara gider.
+global-chat:
+  enabled: true
+  prefix: '!'
+  local-chat-range: 100
+  meta-format: '&a[G] {format}'
+  # global-chat-per-world
+  #aktif edildiğinde, normal mesajlar 'local-chat-range' blok mesafe yakındaki oyunculara gider.
+  #eğer mesajın başında 'prefix' varsa aynı dünyadaki tüm oyunculara gider.
+  #eğer mesajın başında 'global-chat-per-world.prefix' seçeneğindeki ön ek  varsa sunucudaki tüm oyunculara gider.
+  global-chat-per-world:
+    enabled: false
+    prefix: '!!'
+    meta-format: '&6[{world}] {format}'
+
+private-message:
+  enabled: true
+  format: '&a[{from} > {to}] &d{message}'
+  #(if you're Mr_Obliviate) replaces '[Mr_Obliviate -> ByKusH]' to '[You -> ByKusH]'
+  replace-player-name-with: 'You' #write 'disabled' to disable
+
+# auto-mute
+#aktif edildiğinde mesajları aşağıdaki regex'ler ile kontrol eder.
+#eğer eşleşme varsa konsola 'mute-commands' komutlarını uygular.
+#regex'in ne olduğunu bilmiyorsanız sadece 'şunu içeren mesajlar mute yesin'
+#düşüncesiyle aşağıdaki listeye ekleme yapabilirsiniz.
+auto-mute:
+  enabled: false
+  regex-checks:
+    #orospu
+    - '([0oq])((.??){1,2})([r]+)((.??){1,2})([0oq]+)((.??){1,2})([sş]+)((.??){1,2})([bp]+)((.??){1,2})([uü])'
+    #yarak yarrrraq
+    - 'ya[r]+a[kq]'
+    #sikeyim sikerim sikem
+    - '[sş][1ıi][kq]e(r[ıi1]|y[ıi1]|)[mn]'
+    #sokayım sokarım sokam
+    #- '[sş]o[qk]a(r[ıi1]|y[ıi1]|)[mn]'
+    #sikim sikik siken sikerken siktirin siktir sik
+    #- 'si[kq](i[mkq]|en|er|tir|)'
+  mute-commands:
+    - mute {player} 1h You muted for one hour (automatically).
+
+#Players which has 'chatsupervisor.staff' permission,
+#will see this button each messages' end on the chat.
+#
+#Staffs can punishes players with this button.
+#Automatically logs, automatically punish degree and types(ban, mute, warn etc...)...
+#everything is automated just tell us player that needs punish.
+#visit punishment-config.yml to configure punish rules.
+interactive-staff-button:
+  icon: '&8 [X]'
+  description: '&cClick to punish this message!'
+
+log-chat:
+  enabled: true
+  log-private-messages: true
+  #You can use Simple Date Format in log directory to do
+  #seperate logs to dates.
+  #be sure you're using format between '%' chars.
+  log-directory: 'logs/log-%yyyy-MMMM%.log'
+
+#ChatSupervisor formats dates with Simple Date Format methods.
+#visit https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
+#to get more information
+date-format: 'dd/MM/yyyy HH:mm:ss'

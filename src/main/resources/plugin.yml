@@ -1,0 +1,24 @@
+name: ChatSupervisor
+main: mc.obliviate.chatsupervisor.ChatSupervisor
+version: 1.0.0
+api-version: 1.16
+description: An amazing plugin to managing chat formats.
+softdepend:
+  - Vault
+  - PlaceholderAPI
+  - ProtocolLib
+commands:
+  chatsupervisor-reload:
+    aliases:
+      - csreload
+  punish:
+  kontrol:
+  ignore:
+    aliases:
+      - chatmute
+  pm:
+    aliases:
+      - msg
+      - dm
+  r:
+  chatlock:

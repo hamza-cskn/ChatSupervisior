@@ -1,0 +1,24 @@
+prefix: '&8[&5ChatSupervisor&8] '
+blocked-message:
+  blocked-part-of-message: '&c&n{blocked-part}&7'
+  message: 'Badword detected in your message:&7 {message}'
+ignore:
+  you-can-not-ignore-yourself: '&cYou can not ignore yourself.'
+  player-ignored: '&e{ignored}&7 player has been ignored.'
+  player-unignored: '&e{ignored}&7 removed from ignored players list.'
+no-permission: '&cYou do not have permission to do this.'
+warning-message:
+  - ''
+cooldown:
+  chat: '&cYou write too fast, slow down a bit.'
+  warning: '&cThis player already warned for this subject in 30 seconds.'
+
+private-message:
+  usage: '&cCorrect Usage:&7 /{command} <player> <message>'
+  you-can-not-send-message-to-yourself: '&cYou can not send message to yourself!'
+  target-ignoring-you: '&c{target} ignoring you. Your messages will not reach :('
+  target-is-offline: '&c{target} is not online right now.'
+chat-lock:
+  you-can-not-use-chat: '&cServer chat is locked by a staff. You can not use chat while chat is locked.'
+  locked: '&cServer chat has been locked.'
+  unlocked: '&aServer chat has been unlocked.'
