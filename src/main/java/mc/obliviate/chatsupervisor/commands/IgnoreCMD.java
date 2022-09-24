@@ -28,7 +28,7 @@ public class IgnoreCMD implements CommandExecutor {
 		}
 
 		if (args[0].equalsIgnoreCase(player.getName())) {
-			MessageUtils.sendMessage(sender, "you-can-not-ignore-yourself");
+			MessageUtils.sendMessage(sender, "ignore.you-can-not-ignore-yourself");
 			return false;
 		}
 
@@ -38,12 +38,17 @@ public class IgnoreCMD implements CommandExecutor {
 
 		if (playerData.getIgnoredPlayers().contains(target.getUniqueId())) {
 			playerData.getIgnoredPlayers().remove(target.getUniqueId());
-			MessageUtils.sendMessage(sender, "player-unignored", new PlaceholderUtil().add("{ignored}", target.getName()));
+			MessageUtils.sendMessage(sender, "ignore.player-unignored", new PlaceholderUtil().add("{ignored}", target.getName()));
 		} else {
 			playerData.getIgnoredPlayers().add(target.getUniqueId());
-			MessageUtils.sendMessage(sender, "player-ignored", new PlaceholderUtil().add("{ignored}", target.getName()));
+			MessageUtils.sendMessage(sender, "ignore.player-ignored", new PlaceholderUtil().add("{ignored}", target.getName()));
 		}
 		DataHandler.insertData(playerData);
+
+
+
+
+
 
 		return false;
 	}

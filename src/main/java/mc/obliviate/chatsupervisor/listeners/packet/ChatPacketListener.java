@@ -11,7 +11,6 @@ import mc.obliviate.chatsupervisor.handlers.datahandler.DataHandler;
 import mc.obliviate.chatsupervisor.handlers.datahandler.playerdata.PlayerData;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
-import org.bukkit.Bukkit;
 
 public class ChatPacketListener extends PacketAdapter {
 

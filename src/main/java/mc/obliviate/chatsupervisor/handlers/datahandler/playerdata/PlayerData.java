@@ -1,6 +1,7 @@
 package mc.obliviate.chatsupervisor.handlers.datahandler.playerdata;
 
 import mc.obliviate.bloksqliteapi.sqlutils.SQLUpdateColumn;
+import mc.obliviate.chatsupervisor.channel.ChatChannel;
 import mc.obliviate.chatsupervisor.handlers.datahandler.DataHandler;
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatColor;
@@ -18,8 +19,8 @@ public class PlayerData {
 
 	private final UUID uuid;
 	private final List<UUID> ignoredPlayers;
+	private ChatChannel channel;
 	//private final List<Component> messagePacketLog = new ArrayList<>();
-
 
 	private PlayerData(final UUID uuid, final List<UUID> ignoredPlayers) {
 		this.uuid = uuid;
@@ -119,4 +120,13 @@ public class PlayerData {
 
 		return update;
 	}
+
+	public ChatChannel getChannel() {
+		return channel;
+	}
+
+	public void setChannel(ChatChannel channel) {
+		this.channel = channel;
+	}
+
 }

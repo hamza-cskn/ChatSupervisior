@@ -1,7 +1,7 @@
 <component name="libraryTable">
-  <library name="SQLiteAPI">
+  <library name="core-4.1.6">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../Libraries/SQLiteAPI.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../Libraries/inventoryapi/core-4.1.6.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

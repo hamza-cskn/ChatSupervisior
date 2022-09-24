@@ -8,11 +8,11 @@ softdepend:
   - PlaceholderAPI
   - ProtocolLib
 commands:
-  chatsupervisor-reload:
+  chatsupervisorreload:
     aliases:
       - csreload
   punish:
-  kontrol:
+  delictlog:
   ignore:
     aliases:
       - chatmute
@@ -22,3 +22,6 @@ commands:
       - dm
   r:
   chatlock:
+  staffchat:
+  clearchat:
+    aliases: cc

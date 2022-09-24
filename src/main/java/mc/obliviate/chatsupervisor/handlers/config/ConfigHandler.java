@@ -7,13 +7,11 @@ import mc.obliviate.chatsupervisor.handlers.recipient.recipienthandlers.DefaultR
 import mc.obliviate.chatsupervisor.handlers.recipient.recipienthandlers.LocalRecipientHandler;
 import mc.obliviate.chatsupervisor.handlers.recipient.recipienthandlers.PerWorldGlobalRecipientHandler;
 import mc.obliviate.chatsupervisor.utils.message.MessageUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -22,7 +20,7 @@ import static mc.obliviate.chatsupervisor.utils.log.LogUtils.logFile;
 public class ConfigHandler {
 
 	public static final String[] buttonData = new String[2];
-	private static final boolean[] logChatData = new boolean[2];
+	private static boolean logChatData;
 
 	public static YamlConfiguration config;
 	private static SimpleDateFormat dateFormat;
@@ -32,12 +30,12 @@ public class ConfigHandler {
 		this.plugin = plugin;
 	}
 
-	public static boolean isLogChatEnabled() {
-		return logChatData[0];
+	public static boolean shouldChatLogToConsole() {
+		return config.getBoolean("log.send-message-logs-to-console");
 	}
 
-	public static boolean isLogPMEnabled() {
-		return logChatData[1];
+	public static boolean islogFileEnabled() {
+		return logChatData;
 	}
 
 	public static SimpleDateFormat getDateFormat() {
@@ -53,14 +51,13 @@ public class ConfigHandler {
 
 		registerFormats();
 		registerRecipientsHandler();
-		registerWordFilter();
+
 		registerButtonData();
 		setDateFormat(config.getString("date-format", "dd/MM/yyyy HH:mm"));
 
-		logChatData[0] = ConfigHandler.config.getBoolean("log-chat.enabled");
-		logChatData[1] = ConfigHandler.config.getBoolean("log-chat.log-private-messages");
+		logChatData = ConfigHandler.config.getBoolean("log.log-file.enabled");
 
-		String logFileDir = config.getString("log-chat.log-directory", "logs"+File.separator+"log-%M%.log");
+		String logFileDir = config.getString("log.log-file.log-directory", "logs" + File.separator + "log-%M%.log");
 		final String dateFormat = logFileDir.split("%")[1];
 		logFileDir = logFileDir.replace("%" + dateFormat + "%", new SimpleDateFormat(dateFormat).format(new Date()));
 
@@ -99,12 +96,12 @@ public class ConfigHandler {
 
 
 	private void registerButtonData() {
-		buttonData[0] = color(config.getString("interactive-staff-button.icon"));
-		buttonData[1] = color(config.getString("interactive-staff-button.description"));
+		buttonData[0] = MessageUtils.parseColor(config.getString("message-based-punishment.staff-button.icon"));
+		buttonData[1] = MessageUtils.parseColor(config.getString("message-based-punishment.staff-button.description"));
 	}
 
 	private void registerFormat(final String formatName, final String format, final int cooldown) {
-		FormatHandlerAbstract.getFormats().put(formatName, new ChatFormat(color(format), cooldown));
+		FormatHandlerAbstract.getFormats().put(formatName, new ChatFormat(MessageUtils.parseColor(format), cooldown));
 	}
 
 	private void registerFormats() {
@@ -112,6 +109,12 @@ public class ConfigHandler {
 		if (section == null) {
 			plugin.getLogger().severe("No chat group found!");
 			return;
+		}
+
+		if (!section.isSet("default.format")) {
+			section.set("default.format", "&7{player}: &f{message}");
+			section.set("default.chat-cooldown", 1000);
+			plugin.getLogger().severe("Default group format could not found! Please do not delete default group format from config.yml.");
 		}
 		for (final String key : section.getKeys(false)) {
 			final ConfigurationSection format = section.getConfigurationSection(key);
@@ -121,16 +124,6 @@ public class ConfigHandler {
 		}
 	}
 
-	public void registerWordFilter() {
-		for (final String regex : config.getStringList("auto-mute.regex-checks")) {
-			plugin.getWorldFilter().addFilterList(regex);
-		}
-	}
-
-	public String color(final String text) {
-		if (text == null) return null;
-		return ChatColor.translateAlternateColorCodes('&', text);
-	}
 
 	private void registerRecipientsHandler() {
 		if (config.getBoolean("global-chat.enabled")) {
@@ -143,19 +136,17 @@ public class ConfigHandler {
 			plugin.setRecipientHandler(new DefaultRecipientHandler(plugin));
 		}
 
-		plugin.getLogger().info("[!] Recipients Handler Mode: " + plugin.getRecipientHandler().getMode());
-
 		final int range = config.getInt("global-chat.local-chat-range", 0);
 		if (range <= 0) {
-			plugin.getLogger().severe("[Warning] Local Chat Range is below or equal to zero. (" + range + ")");
+			plugin.getLogger().severe("Local Chat Range is below or equal to zero. (" + range + ")");
 		}
 		plugin.getRecipientHandler().setRange(range);
 		plugin.getRecipientHandler().setGlobalPrefix(config.getString("global-chat.prefix", ""));
 		plugin.getRecipientHandler().setPerWorldGlobalPrefix(config.getString("global-chat.global-chat-per-world.prefix", ""));
 		plugin.getRecipientHandler().setPerWorldGlobalPrefix(config.getString("global-chat.global-chat-per-world.prefix", ""));
 
-		plugin.getRecipientHandler().setGlobalChatMetaFormat(color(config.getString("global-chat.meta-format", "")));
-		plugin.getRecipientHandler().setPerWorldGlobalChatMetaFormat(color(config.getString("global-chat.global-chat-per-world.meta-format", "")));
+		plugin.getRecipientHandler().setGlobalChatMetaFormat(MessageUtils.parseColor(config.getString("global-chat.meta-format", "")));
+		plugin.getRecipientHandler().setPerWorldGlobalChatMetaFormat(MessageUtils.parseColor(config.getString("global-chat.global-chat-per-world.meta-format", "")));
 
 
 	}

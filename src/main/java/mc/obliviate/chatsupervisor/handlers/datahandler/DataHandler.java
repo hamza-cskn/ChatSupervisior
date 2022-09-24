@@ -22,7 +22,6 @@ import java.util.UUID;
 
 public class DataHandler extends SQLHandler {
 
-
 	private static final Map<UUID, PlayerDelictData> playerDelictDatas = new HashMap<>();
 	private static final Map<UUID, PlayerData> playerDatas = new HashMap<>();
 	private static SQLTable delictDataTable;
@@ -154,7 +153,7 @@ public class DataHandler extends SQLHandler {
 		final ConfigurationSection section = config.getConfigurationSection("delicts");
 		assert section != null;
 		for (String key : section.getKeys(false)) {
-			DelictType.deserializeConfig(plugin.getDelictNotifier(), section.getConfigurationSection(key));
+			DelictType.deserializeConfig(section.getConfigurationSection(key));
 		}
 	}
 

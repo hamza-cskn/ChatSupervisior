@@ -19,7 +19,7 @@ import java.util.UUID;
 
 public class PrivateMessageCMD implements CommandExecutor {
 
-	private static final Map<UUID, UUID> playerLastReceiverMap = new HashMap<>();
+	private final Map<UUID, UUID> playerLastReceiverMap = new HashMap<>();
 	private final String format;
 	private final String replacePlayerName;
 
@@ -28,7 +28,7 @@ public class PrivateMessageCMD implements CommandExecutor {
 		this.replacePlayerName = replacePlayerName;
 	}
 
-	public static void clearLastReceiverCache(UUID uuid) {
+	public void removeLastReceiverCache(UUID uuid) {
 		playerLastReceiverMap.remove(uuid);
 	}
 
@@ -89,17 +89,15 @@ public class PrivateMessageCMD implements CommandExecutor {
 
 
 	private void sendPM(final String message, final Player sender, final Player receiver) {
-
-
-		if (ConfigHandler.isLogPMEnabled()) {
+		if (ConfigHandler.islogFileEnabled()) {
 			LogUtils.log("[PM] " + sender.getName() + " > " + receiver.getName() + ": " + message);
 		}
 
 		String fromFormatted;
 		String toFormatted;
 		if (!replacePlayerName.equalsIgnoreCase("disabled")) {
-			fromFormatted = format.replace("{from}", replacePlayerName).replace("{to}", receiver.getName());
-			toFormatted = format.replace("{to}", replacePlayerName).replace("{from}", sender.getName());
+			fromFormatted = format.replace("{to}", receiver.getName());
+			toFormatted = format.replace("{from}", sender.getName());
 		} else {
 			fromFormatted = format.replace("{from}", sender.getName()).replace("{to}", receiver.getName());
 			toFormatted = format.replace("{from}", sender.getName()).replace("{to}", receiver.getName());

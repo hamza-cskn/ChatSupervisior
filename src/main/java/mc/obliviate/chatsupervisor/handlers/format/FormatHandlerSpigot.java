@@ -8,17 +8,17 @@ import mc.obliviate.chatsupervisor.handlers.placeholderapi.PlaceholderAPIHandler
 import net.md_5.bungee.api.chat.*;
 import org.bukkit.entity.Player;
 
-public class FormatHandler1_8 extends FormatHandlerAbstract implements FormatHandler {
+public class FormatHandlerSpigot extends FormatHandlerAbstract implements FormatHandler {
 
-	public FormatHandler1_8(ChatSupervisor plugin) {
+	public FormatHandlerSpigot(ChatSupervisor plugin) {
 		super(plugin);
 	}
 
 	@Override
 	public void send(Player receiver, ChatFormatMeta chatFormatMeta, ChatFormat format) {
+		//receiver.sendMessage(chatFormatMeta.getSender() + ": " + chatFormatMeta.getMessage());
 		receiver.sendMessage(applyFormatMeta(chatFormatMeta,format));
 	}
-
 
 	private BaseComponent applyFormatMeta(final ChatFormatMeta chatFormatMeta, final ChatFormat format) {
 
@@ -27,12 +27,11 @@ public class FormatHandler1_8 extends FormatHandlerAbstract implements FormatHan
 		String metaFormattedString = chatFormatMeta.getMetaFormat();
 
 		metaFormattedString = PlaceholderAPIHandler.parsePlaceholders(chatFormatMeta.getSender(), metaFormattedString);
-
 		metaFormattedString = metaFormattedString.replace("{world}", chatFormatMeta.getSender().getWorld().getName()).replace("{format}", formattedString);
+		metaFormattedString = formatMentionTag(metaFormattedString);
 
 		final BaseComponent builder = new TextComponent(metaFormattedString);
 
-		//todo has permission
 		if (chatFormatMeta.getReceiver().isOp()) {
 			builder.addExtra(getStaffButton(chatFormatMeta.getSender().getName() + " " + chatFormatMeta.getMessage()));
 			return builder;
@@ -45,7 +44,7 @@ public class FormatHandler1_8 extends FormatHandlerAbstract implements FormatHan
 	private BaseComponent getStaffButton(final String cmd) {
 		final TextComponent text = new TextComponent(ConfigHandler.buttonData[0]);
 		text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(ConfigHandler.buttonData[1]).create()));
-		text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,"/punish " + cmd));
+		text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/punish " + cmd));
 		return text;
 		/*
 		 * 		button.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/punish " + cmd));

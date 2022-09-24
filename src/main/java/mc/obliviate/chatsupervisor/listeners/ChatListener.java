@@ -3,20 +3,18 @@ package mc.obliviate.chatsupervisor.listeners;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import mc.obliviate.chatsupervisor.ChatSupervisor;
+import mc.obliviate.chatsupervisor.format.ChatFormat;
 import mc.obliviate.chatsupervisor.format.ChatFormatMeta;
-import mc.obliviate.chatsupervisor.handlers.format.FormatHandler1_16;
 import mc.obliviate.chatsupervisor.handlers.config.ConfigHandler;
+import mc.obliviate.chatsupervisor.handlers.datahandler.DataHandler;
 import mc.obliviate.chatsupervisor.handlers.format.FormatHandlerAbstract;
 import mc.obliviate.chatsupervisor.handlers.recipient.IRecipientHandler;
 import mc.obliviate.chatsupervisor.handlers.recipient.RecipientResult;
-import mc.obliviate.chatsupervisor.handlers.datahandler.DataHandler;
-import mc.obliviate.chatsupervisor.format.ChatFormat;
 import mc.obliviate.chatsupervisor.utils.log.LogUtils;
 import mc.obliviate.chatsupervisor.utils.message.MessageUtils;
 import mc.obliviate.chatsupervisor.utils.message.PlaceholderUtil;
-import net.kyori.adventure.text.Component;
+import mc.obliviate.chatsupervisor.wordfilter.regex.MatchedStringMeta;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -31,26 +29,51 @@ import java.util.concurrent.TimeUnit;
 public class ChatListener implements Listener {
 
 	public static boolean chatLockEnabled = false;
+	private final boolean logToConsole;
 	private final ChatSupervisor plugin;
 	private final IRecipientHandler recipientHandler;
 	private final Cache<UUID, Long> playerTimeoutMap;
+	private final List<Player> staffChatPlayers = new ArrayList<>();
 
-	public ChatListener(int cacheTimeOut, final ChatSupervisor plugin) {
+	public ChatListener(final ChatSupervisor plugin) {
 		this.plugin = plugin;
 		this.recipientHandler = plugin.getRecipientHandler();
-		playerTimeoutMap = CacheBuilder.newBuilder().expireAfterAccess(cacheTimeOut, TimeUnit.SECONDS).build();
+		this.logToConsole = ConfigHandler.shouldChatLogToConsole();
+
+		int maxCooldown = 0;
+		for (ChatFormat format : FormatHandlerAbstract.getFormats().values()) {
+			if (format.getCooldown() > maxCooldown) {
+				maxCooldown = format.getCooldown();
+			}
+		}
+		//cache time out time will be set to max cooldown of groups
+		playerTimeoutMap = CacheBuilder.newBuilder().expireAfterAccess(maxCooldown, TimeUnit.SECONDS).build();
 	}
 
-	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onChat(final AsyncPlayerChatEvent event) {
 		event.setCancelled(true);
 
-		if (ConfigHandler.isLogChatEnabled()) {
+		final boolean isInStaffMode = staffChatPlayers.contains(event.getPlayer());
+
+		//log stuffs
+		if (ConfigHandler.islogFileEnabled()) {
 			String log = event.getPlayer().getName() + ": " + event.getMessage();
 			if (chatLockEnabled) {
 				log = "[CHAT_LOCKED] " + log;
 			}
+			if (isInStaffMode) {
+				log = "[STAFF_CHAT] " + log;
+			}
 			LogUtils.log(log);
+			if (logToConsole) {
+				Bukkit.getLogger().info(log);
+			}
+		}
+
+		if (isInStaffMode && ChatSupervisor.getPermission().has(event.getPlayer(), "chatsupervisor.staffchat")) {
+			sendStaffChatMessage(event.getPlayer(), event.getMessage());
+			return;
 		}
 
 		if (chatLockEnabled && !ChatSupervisor.getPermission().has(event.getPlayer(), "chatsupervisor.bypass.chatlock")) {
@@ -63,27 +86,12 @@ public class ChatListener implements Listener {
 
 		if (!checkCooldown(sender, format)) return;
 
-		final RecipientResult recipientResult = recipientHandler.getRecipientResult(event);
+		final RecipientResult recipientResult = recipientHandler.getRecipientResult(event); //if you want to channel system code here
 		String message = recipientResult.getTrimmedMessage();
 
-		final String badwordCatch = plugin.getWorldFilter().checkRegex(event.getMessage());
-		if (!badwordCatch.isEmpty()) {
-			final String msg = event.getMessage().replace(badwordCatch, MessageUtils.parseColor(MessageUtils.getMessage("blocked-message.blocked-part-of-message")));
-			MessageUtils.sendMessage(sender, "blocked-message.message", new PlaceholderUtil().add("{message}", msg).add("{blocked-part}", badwordCatch));
-			Bukkit.getScheduler().runTask(plugin,() -> {
-
-				for (final String cmd : ConfigHandler.config.getStringList("auto-mute.mute-commands")) {
-					Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), cmd.replace("{player}", sender.getName()));
-				}
-			});
-
+		final MatchedStringMeta matchedStringMeta = plugin.getRegexSupervisorHandler().checkStringAndExecute(event.getPlayer(), message);
+		if (matchedStringMeta != null && matchedStringMeta.shouldMessageCancelled()) {
 			return;
-		}
-
-		final String linkCatch = plugin.getWorldFilter().checkLink(event.getMessage());
-		if (!linkCatch.isEmpty()) {
-			message = message.replace(linkCatch, ChatColor.AQUA + linkCatch + ChatColor.WHITE);
-
 		}
 
 		//remove ignored players
@@ -117,4 +125,18 @@ public class ChatListener implements Listener {
 		return true;
 	}
 
+	private void sendStaffChatMessage(Player p, String message) {
+		final String format = MessageUtils.parse(ConfigHandler.config.getString("staff-chat.format"), new PlaceholderUtil().add("{message}", message).add("{sender}", p.getName()));
+		for (Player player : staffChatPlayers) {
+			player.sendMessage(format);
+		}
+	}
+
+	public void removeStaffList(Player p) {
+		staffChatPlayers.remove(p);
+	}
+
+	public List<Player> getStaffChatPlayers() {
+		return staffChatPlayers;
+	}
 }

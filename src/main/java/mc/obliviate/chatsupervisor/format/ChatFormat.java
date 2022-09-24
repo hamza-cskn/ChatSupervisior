@@ -15,7 +15,6 @@ public class ChatFormat {
 
 	public String convert(final ChatFormatMeta chatFormatMeta) {
 		String message = chatFormatMeta.getMessage();
-		if (ChatSupervisor.getPermission().has(chatFormatMeta.getSender(),"chatsupervisor.color")) message = MessageUtils.parseColor(message);
 		return format
 				.replace("{player}", chatFormatMeta.getSender().getName())
 				.replace("{message}", message);
@@ -28,5 +27,6 @@ public class ChatFormat {
 	public String toString() {
 		return format;
 	}
+
 
 }

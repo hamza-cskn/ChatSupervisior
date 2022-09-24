@@ -3,17 +3,16 @@ package mc.obliviate.chatsupervisor.punishment.gui;
 import mc.obliviate.chatsupervisor.punishment.delict.DelictType;
 import mc.obliviate.chatsupervisor.utils.message.MessageUtils;
 import mc.obliviate.chatsupervisor.utils.xmaterial.XMaterial;
-import org.bukkit.Material;
+import mc.obliviate.inventory.Gui;
+import mc.obliviate.inventory.Icon;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.ItemStack;
-import xyz.efekurbann.inventory.GUI;
-import xyz.efekurbann.inventory.Hytem;
 
 import static mc.obliviate.chatsupervisor.handlers.datahandler.DataHandler.getDelictTypes;
 
-public class PunishmentGUI extends GUI {
+public class PunishmentGUI extends Gui {
 
 	private final OfflinePlayer target;
 	private final String message;
@@ -28,11 +27,11 @@ public class PunishmentGUI extends GUI {
 	public void onOpen(InventoryOpenEvent event) {
 		fillGui(new ItemStack(XMaterial.BLACK_STAINED_GLASS_PANE.parseItem()));
 
-		addItem(4, new Hytem(XMaterial.PLAYER_HEAD.parseItem()).setName(target.getName()).appendLore(MessageUtils.splitMessage(message, "§f")));
+		addItem(4, new Icon(XMaterial.PLAYER_HEAD.parseItem()).setName(target.getName()).appendLore(MessageUtils.splitMessage(message, 20, "§f")));
 
 		int i = 10;
 		for (DelictType delictType : getDelictTypes()) {
-			addItem(i, new Hytem(XMaterial.BEDROCK.parseItem()).setName("§c§l" + delictType.getName()).onClick(e -> {
+			addItem(i, new Icon(XMaterial.BEDROCK.parseItem()).setName("§c§l" + delictType.getName()).onClick(e -> {
 				delictType.punish(target, player, message);
 			}));
 			i += 2;

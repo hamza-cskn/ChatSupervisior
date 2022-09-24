@@ -1,7 +1,8 @@
 chat-groups:
+  #Do not delete default format!
   default:
     format: '&7{player}: &f{message}'
-    chat-cooldown: 1000
+    chat-cooldown: 1000 #in ms
   owner:
     format: '&c[Owner] {player}: &f{message}'
     chat-cooldown: 1000
@@ -28,36 +29,63 @@ global-chat:
   #eğer mesajın başında 'prefix' varsa aynı dünyadaki tüm oyunculara gider.
   #eğer mesajın başında 'global-chat-per-world.prefix' seçeneğindeki ön ek  varsa sunucudaki tüm oyunculara gider.
   global-chat-per-world:
-    enabled: false
+    enabled: true
     prefix: '!!'
     meta-format: '&6[{world}] {format}'
 
+# Private Message
+# Introduces /msg, /r, /pm commands. If enabled option is false,
+# these commands will not be registered.
 private-message:
   enabled: true
   format: '&a[{from} > {to}] &d{message}'
   #(if you're Mr_Obliviate) replaces '[Mr_Obliviate -> ByKusH]' to '[You -> ByKusH]'
   replace-player-name-with: 'You' #write 'disabled' to disable
 
-# auto-mute
-#aktif edildiğinde mesajları aşağıdaki regex'ler ile kontrol eder.
-#eğer eşleşme varsa konsola 'mute-commands' komutlarını uygular.
-#regex'in ne olduğunu bilmiyorsanız sadece 'şunu içeren mesajlar mute yesin'
-#düşüncesiyle aşağıdaki listeye ekleme yapabilirsiniz.
-auto-mute:
-  enabled: false
+# Regex Supervisor
+# checks regex and executes specific commands, sends messages etc...
+regex-supervisor:
+  enabled: true
+  supervisors:
+    bad-word-filter:
+      bypass-permission: 'chatsupervisor.bypass.badword'
+      regex-checks:
+        - '([0oq])([r]+)([0oq]+)([sş]+)([bp]+)([uü])|([0oq])([r]+)([sş]+)([bp]+)([uü])'
+        - '\Wya[r]+a[kq]|^ya[r]+a[kq]'
+        - '(^([sş][1ıi][kq]e[yr]))|(\W([sş][1ıi][kq]e[yr]))'
+        - '(^[sş][1ıi][kq]t[1ıi][r])|(\W[sş][1ıi][kq]t[1ıi][r])'
+        - '^(göt(?!ür)|got(?!ur))|\W(göt(?!ür)|got(?!ur))'
+        - '(^am[1ıi]n[1ıia])|(\Wam[1ıi]n[1ıia])'
+        - '(^[şs][1i][qk][1i][şs])|(\W[şs][1i][qk][1i][şs])'
+      when-match:
+        execute:
+          - '[EXECUTE_CONSOLE] mute {player} 1h You muted for one hour (automatically).' # execute console command
+          - '[MESSAGE_PLAYER] &cBadword detected in your message:&7 {message}' # send message to the player
+        overwrite-matched-string: '&c&n{matched-string}&7' # overwrites matched string which is in placeholder {message}.
+    anti-url:
+      bypass-permission: 'chatsupervisor.bypass.url'
+      regex-checks:
+        - '(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})'
+      when-match:
+        execute:
+          - '[MESSAGE_PLAYER] &cDo not send links to chat!'
+
+message-based-punishment:
+  staff-button:
+    description: '&cClick to punish'
+    icon: ' &8[X]'
+
+
+mention-tag:
+  enabled: true
+  trim-first-character: true  #if set true, ChatSupervisor will delete first character before searching player.
+  # search message string with these regex checks
   regex-checks:
-    #orospu
-    - '([0oq])((.??){1,2})([r]+)((.??){1,2})([0oq]+)((.??){1,2})([sş]+)((.??){1,2})([bp]+)((.??){1,2})([uü])'
-    #yarak yarrrraq
-    - 'ya[r]+a[kq]'
-    #sikeyim sikerim sikem
-    - '[sş][1ıi][kq]e(r[ıi1]|y[ıi1]|)[mn]'
-    #sokayım sokarım sokam
-    #- '[sş]o[qk]a(r[ıi1]|y[ıi1]|)[mn]'
-    #sikim sikik siken sikerken siktirin siktir sik
-    #- 'si[kq](i[mkq]|en|er|tir|)'
-  mute-commands:
-    - mute {player} 1h You muted for one hour (automatically).
+    - '@[a-zA-Z0-9_.]+?(?![a-zA-Z0-9_.])'
+  # and replace result with
+  format: '&a@{player}'
+  # if you do not want use any prefix(@) to mention players,
+  # just put '\w' regex check to the list. and set trim-first-character option to false.
 
 #Players which has 'chatsupervisor.staff' permission,
 #will see this button each messages' end on the chat.
@@ -66,9 +94,9 @@ auto-mute:
 #Automatically logs, automatically punish degree and types(ban, mute, warn etc...)...
 #everything is automated just tell us player that needs punish.
 #visit punishment-config.yml to configure punish rules.
-interactive-staff-button:
-  icon: '&8 [X]'
-  description: '&cClick to punish this message!'
+
+staff-chat:
+  format: '&d&l[STAFF] &f{sender}: &a{message}'
 
 log-chat:
   enabled: true

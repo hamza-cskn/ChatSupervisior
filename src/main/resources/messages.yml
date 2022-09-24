@@ -1,18 +1,20 @@
 prefix: '&8[&5ChatSupervisor&8] '
-blocked-message:
-  blocked-part-of-message: '&c&n{blocked-part}&7'
-  message: 'Badword detected in your message:&7 {message}'
+console: 'Console'
 ignore:
   you-can-not-ignore-yourself: '&cYou can not ignore yourself.'
   player-ignored: '&e{ignored}&7 player has been ignored.'
   player-unignored: '&e{ignored}&7 removed from ignored players list.'
 no-permission: '&cYou do not have permission to do this.'
+chat-cleared: '&cChat has been cleared by &f{executor}&c.'
 warning-message:
   - ''
+warning:
+  cooldown: '&cThis player already warned for this subject in 30 seconds.'
 cooldown:
   chat: '&cYou write too fast, slow down a bit.'
-  warning: '&cThis player already warned for this subject in 30 seconds.'
-
+staff-chat:
+  disabled: '&cYour messages will not sends to staff channel.'
+  enabled: '&aYour messages will sends to staff channel.'
 private-message:
   usage: '&cCorrect Usage:&7 /{command} <player> <message>'
   you-can-not-send-message-to-yourself: '&cYou can not send message to yourself!'
